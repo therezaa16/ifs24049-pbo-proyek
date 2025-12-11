@@ -1,8 +1,6 @@
 package org.delcom.app.views;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.delcom.app.configs.AuthContext;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -42,47 +39,17 @@ public class LaundryViewController {
     @Autowired
     private AuthContext authContext;
 
-    // Halaman utama - Daftar semua order
+    // ❌ DISABLED: Endpoint /laundry tidak digunakan lagi, semua via /
+    // Halaman utama sudah dipindah ke HomeView.java
+    /*
     @GetMapping
     public String index(
             @RequestParam(required = false) String search,
             Model model) {
-
-        if (!authContext.isAuthenticated()) {
-            return "redirect:/auth/login";
-        }
-
-        try {
-            User authUser = authContext.getAuthUser();
-            List<LaundryOrder> orders = laundryOrderService.getAllLaundryOrders(authUser.getId(), search);
-
-            // Get statistics for charts
-            Map<String, Object> stats = laundryOrderService.getStatistics(authUser.getId());
-
-            model.addAttribute("auth", authUser);
-            model.addAttribute("laundryOrders", orders);
-            model.addAttribute("laundryOrderForm", new LaundryOrderForm());
-            model.addAttribute("coverLaundryForm", new CoverLaundryForm());
-            model.addAttribute("search", search != null ? search : "");
-
-            // Add statistics to model with null checks
-            model.addAttribute("totalOrders", stats.getOrDefault("totalOrders", 0));
-            model.addAttribute("pendingOrders", stats.getOrDefault("pendingOrders", 0));
-            model.addAttribute("ongoingOrders", stats.getOrDefault("ongoingOrders", 0));
-            model.addAttribute("totalRevenue", stats.getOrDefault("totalRevenue", 0.0));
-            model.addAttribute("statusChart", stats.getOrDefault("statusChart", new java.util.HashMap<>()));
-            model.addAttribute("serviceChart", stats.getOrDefault("serviceChart", new java.util.HashMap<>()));
-
-            return ConstUtil.TEMPLATE_PAGES_LAUNDRY_HOME;
-        } catch (Exception e) {
-            // Log error untuk debugging
-            System.err.println("Error in LaundryViewController.index: " + e.getMessage());
-            e.printStackTrace();
-            
-            // Redirect ke home jika error
-            return "redirect:/";
-        }
+        // ... code disabled ...
+        return ConstUtil.TEMPLATE_PAGES_LAUNDRY_HOME;
     }
+    */
 
     // Detail order
     @GetMapping("/{id}")

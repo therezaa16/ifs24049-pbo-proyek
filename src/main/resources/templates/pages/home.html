@@ -151,14 +151,22 @@
         </div>
         <div class="card-body">
           
-          <!-- Search -->
-          <form th:action="@{/laundry}" method="get" class="mb-4">
+          <!-- Search - FIX: Submit ke / instead of /laundry -->
+          <form th:action="@{/}" method="get" class="mb-4">
             <div class="input-group">
               <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
               <input type="text" name="search" class="form-control border-start-0 ps-0" 
-                     placeholder="Cari nama pelanggan atau nomor HP..." th:value="${search}">
-              <button class="btn btn-primary" type="submit">Cari</button>
+                     placeholder="Cari nama pelanggan atau nomor HP..." th:value="${search}" id="searchInput">
+              <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search me-1"></i> Cari
+              </button>
+              <a th:href="@{/}" class="btn btn-outline-secondary" th:if="${search != null && !search.isEmpty()}">
+                <i class="bi bi-x-circle me-1"></i> Clear
+              </a>
             </div>
+            <small class="text-muted" th:if="${search != null && !search.isEmpty()}">
+              Menampilkan hasil pencarian untuk: "<span class="fw-bold" th:text="${search}"></span>"
+            </small>
           </form>
 
           <div class="table-responsive">
