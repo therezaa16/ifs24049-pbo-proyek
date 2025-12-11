@@ -1,47 +1,131 @@
-# Spring v4.0 Proyek Starter
+# Laundry Management System
 
-## Logs
+Aplikasi manajemen laundry berbasis web dengan Spring Boot, menyediakan dashboard, statistik, dan upload foto bukti cucian.
 
-### 04-11-2025
+## 🚀 Tech Stack
 
-- Memperbarui kebutuhan paket
+- Java 25 & Spring Boot 4.0
+- Spring Security (Session & JWT)
+- Thymeleaf, Bootstrap 5, Chart.js
+- PostgreSQL/MySQL/H2
+- Maven
 
-### 29-10-2025
+## ✨ Fitur
 
-- Melakukan inisialisasi proyek
+- ✅ Login & Register dengan Spring Security
+- ✅ CRUD Order Laundry (Tambah, Edit, Hapus, Detail)
+- ✅ Dashboard dengan statistik & chart
+- ✅ Upload foto bukti cucian (max 5MB)
+- ✅ Search order berdasarkan nama/HP
+- ✅ REST API dengan JWT authentication
 
+## 📦 Instalasi & Menjalankan
 
-## Syntax
+### 1. Clone & Install Dependencies
+```bash
+git clone 
+cd 
+mvn clean install
+```
 
-### Melakukan Instal Ulang Kebutuhan Paket
+### 2. Konfigurasi Database
+Edit `src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/db_laundry_app
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 
-command: `mvn clean install`
+app.upload.dir=./uploads
+spring.servlet.multipart.max-file-size=5MB
+```
 
-#### Windows: elakukan build ulang proyek dan membuka hasil laporan
-command with open jacoco: `mvn clean test; start target\site\jacoco\index.html`
+### 3. Jalankan Aplikasi
+```bash
+mvn spring-boot:run
+```
+Akses: **http://localhost:8080**
 
-#### Mac: melakukan build ulang proyek dan membuka hasil laporan
-command with open jacoco: `mvn clean test && open target\site\jacoco\index.html`
+## 🧪 Testing & Coverage
 
-#### Linux: melakukan build ulang proyek dan membuka hasil laporan
-command with open jacoco: `mvn clean test && xdg-open target\site\jacoco\index.html`
+```bash
+# Run tests
+mvn test
 
-### Menjalankan Aplikasi
+# Generate coverage report
+./mvnw test jacoco:report
 
-Command: `mvn spring-boot:run`
+# Open report (Windows)
+mvn clean test; start target\site\jacoco\index.html
 
-URL: http://localhost:8080
+# Open report (Mac/Linux)
+mvn clean test && open target/site/jacoco/index.html
+```
 
-### Menjalankan Test Covertage
+## 📱 Endpoints
 
-pre-command: `mvn clean install`
+### Web UI
+| Route | Deskripsi |
+|-------|-----------|
+| `/` | Dashboard |
+| `/auth/login` | Login |
+| `/auth/register` | Register |
+| `/laundry` | List order |
+| `/laundry/{id}` | Detail order |
 
-command: `./mvnw test jacoco:report`
+### REST API (requires JWT)
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/api/auth/login` | Login & get token |
+| GET | `/api/laundry` | Get all orders |
+| POST | `/api/laundry` | Create order |
+| PUT | `/api/laundry/{id}` | Update order |
+| DELETE | `/api/laundry/{id}` | Delete order |
 
-command-check: `./mvnw clean test jacoco:check`
+**Auth Header:** `Authorization: Bearer <token>`
 
-## Purpose
+## 📊 Dashboard Features
+
+- Total order, pending, proses, revenue
+- Chart statistik layanan (Bar Chart)
+- Chart status pesanan (Doughnut)
+- Search & filter
+
+## 📸 Upload Foto
+
+- Format: JPG, PNG, WEBP, GIF
+- Max size: 5MB
+- Preview sebelum upload
+- Disimpan di folder `uploads/`
+
+## 🔧 Troubleshooting
+
+**Error 500 di `/laundry`:**
+- Check file `templates/pages/laundry/home.html` exists
+- Check console log untuk detail error
+
+**Upload foto gagal:**
+- Check permission folder `uploads/`
+- Pastikan `app.upload.dir` configured correctly
+
+## 📝 Changelog
+
+### 11-12-2025
+- ✅ Frontend laundry management completed
+- ✅ Chart implementation with Chart.js
+- ✅ WebAuthInterceptor for session handling
+- ✅ Upload foto with preview
+- ✅ Better error handling
+
+### 20-11-2025
+- Update dependencies
+
+### 15-11-2025
+- Initial project setup
+
+## 📄 License
 
 Proyek ini dibuat untuk tujuan **Pendidikan**.
 
+---
 
+**Happy Coding! 🚀**
