@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/base}"
+  lang="id"
+>
+  <head>
+    <title>Detail Transaksi</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      
+      <!-- Back Button - FIX: Redirect ke / instead of /laundry -->
+      <a th:href="@{/}" class="btn btn-link text-decoration-none mb-3 ps-0 text-secondary">
+        <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+      </a>
+
+      <div class="row">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+              <h5 class="m-0 fw-bold text-primary">Informasi Pesanan</h5>
+              
+              <!-- Status Badge -->
+              <span th:if="${order.status == 'Pending'}" class="badge bg-warning text-dark px-3 py-2">Pending</span>
+              <span th:if="${order.status == 'Proses'}" class="badge bg-primary px-3 py-2">Proses</span>
+              <span th:if="${order.status == 'Selesai'}" class="badge bg-success px-3 py-2">Selesai</span>
+              <span th:if="${order.status == 'Diambil'}" class="badge bg-info px-3 py-2">Diambil</span>
+            </div>
+            
+            <div class="card-body">
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <small class="text-uppercase text-muted fw-bold">Pelanggan</small>
+                  <h4 class="text-dark fw-bold mt-1" th:text="${order.customerName}">Nama</h4>
+                  <div class="d-flex align-items-center mt-2">
+                    <i class="bi bi-telephone text-primary me-2"></i>
+                    <span th:text="${order.phoneNumber}">08123</span>
+                  </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                   <small class="text-uppercase text-muted fw-bold">Total Tagihan</small>
+                   <h2 class="text-success fw-bold">Rp <span th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')}"></span></h2>
+                   <span class="badge bg-light text-secondary border mt-1" th:text="${order.serviceType}">Layanan</span>
+                </div>
+              </div>
+              
+              <hr class="my-4">
+              
+              <div class="row g-4">
+                 <div class="col-md-4">
+                   <div class="p-3 bg-light rounded h-100">
+                     <small class="text-muted d-block mb-1">Berat Cucian</small>
+                     <span class="fw-bold fs-5"><i class="bi bi-box-seam me-2"></i> <span th:text="${order.weight}"></span> kg</span>
+                   </div>
+                 </div>
+                 <div class="col-md-4">
+                   <div class="p-3 bg-light rounded h-100">
+                     <small class="text-muted d-block mb-1">Tanggal Masuk</small>
+                     <span class="fw-bold"><i class="bi bi-calendar-event me-2"></i> <span th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}"></span></span>
+                   </div>
+                 </div>
+                 <div class="col-md-4">
+                   <div class="p-3 bg-light rounded h-100">
+                     <small class="text-muted d-block mb-1">Update Terakhir</small>
+                     <span class="fw-bold"><i class="bi bi-clock-history me-2"></i> <span th:text="${#temporals.format(order.updatedAt, 'HH:mm')}"></span> WIB</span>
+                   </div>
+                 </div>
+              </div>
+              
+              <div class="mt-4">
+                <label class="fw-bold mb-2">Catatan Khusus:</label>
+                <p class="text-muted fst-italic border-start border-4 border-warning ps-3" 
+                   th:text="${order.notes ?: 'Tidak ada catatan.'}"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evidence / Photo Side -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+              <h6 class="m-0 fw-bold text-dark"><i class="bi bi-camera me-2"></i>Foto Bukti Cucian</h6>
+            </div>
+            <div class="card-body text-center p-4">
+              <div class="mb-3">
+                <div th:if="${order.cover}" class="rounded overflow-hidden shadow-sm border">
+                  <img th:src="@{'/laundry/cover/' + ${order.cover}}" class="img-fluid" alt="Bukti Foto">
+                </div>
+                <div th:unless="${order.cover}" class="py-5 bg-light rounded border border-dashed">
+                  <i class="bi bi-image text-muted display-4"></i>
+                  <p class="text-muted mt-2 small">Belum ada foto yang diupload</p>
+                </div>
+              </div>
+              
+              <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#editCoverLaundryModal">
+                <i class="bi bi-upload me-2"></i> Upload / Ganti Foto
+              </button>
+            </div>
+          </div>
+          
+           <div class="d-grid mt-3">
+             <button onclick="window.print()" class="btn btn-secondary">
+               <i class="bi bi-printer me-2"></i> Cetak Struk
+             </button>
+           </div>
+        </div>
+      </div>
+
+      <!-- Modal Upload Foto -->
+      <div th:replace="~{models/laundry/edit-cover :: editCoverLaundryModal}"></div>
+    </div>
+    
+    <script layout:fragment="others-js">
+       // Check if modal needs to be opened from backend error
+       const editCoverOpen = "[[${editCoverLaundryModalOpen}]]" === "true";
+       if (editCoverOpen) {
+          new bootstrap.Modal(document.getElementById("editCoverLaundryModal")).show();
+       }
+    </script>
+  </body>
+</html>

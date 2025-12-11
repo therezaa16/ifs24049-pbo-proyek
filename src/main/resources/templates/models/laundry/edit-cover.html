@@ -1,0 +1,115 @@
+<div th:fragment="editCoverLaundryModal">
+  <form
+    th:action="@{/laundry/edit-cover}"
+    method="post"
+    th:object="${coverLaundryForm}"
+    enctype="multipart/form-data"
+  >
+    <div class="modal fade" id="editCoverLaundryModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-image me-2"></i>Upload Bukti Foto
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Hidden ID - FIX: Set dari order.id -->
+            <input type="hidden" th:field="*{id}" th:value="${order?.id}" id="editCoverOrderId" />
+
+            <div class="text-center mb-4">
+              <div id="imagePreview" class="border rounded p-2 bg-light d-inline-block" style="display: none; min-width: 200px; min-height: 200px;">
+                 <img id="previewImg" src="" alt="Preview" class="img-fluid rounded" style="max-height: 250px" />
+              </div>
+              <div id="placeholderPreview" class="border border-dashed rounded p-5 bg-light text-muted">
+                 <i class="bi bi-cloud-arrow-up display-4"></i>
+                 <p class="small mt-2 mb-0">Preview foto akan muncul di sini</p>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Pilih Foto (JPG/PNG/WEBP)</label>
+              <input
+                type="file"
+                class="form-control"
+                th:field="*{coverFile}"
+                id="editCoverLaundryFile"
+                accept="image/jpeg,image/png,image/jpg,image/webp,image/gif"
+                required
+              />
+              <div class="form-text small text-muted">
+                Maksimal ukuran file 5MB. Format: JPG, PNG, WEBP, atau GIF
+              </div>
+            </div>
+            
+            <div class="alert alert-info d-flex align-items-center small" role="alert">
+               <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+               <div>
+                  Foto ini akan dicetak pada struk sebagai bukti kondisi pakaian.
+               </div>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-upload me-2"></i>Upload Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      const fileInput = document.getElementById("editCoverLaundryFile");
+      const previewBlock = document.getElementById("imagePreview");
+      const placeholderBlock = document.getElementById("placeholderPreview");
+      const previewImg = document.getElementById("previewImg");
+
+      // FIX: Set order ID ke form saat modal dibuka
+      const editCoverModal = document.getElementById("editCoverLaundryModal");
+      if (editCoverModal) {
+        editCoverModal.addEventListener('show.bs.modal', function () {
+          const orderId = /*[[${order?.id}]]*/ '';
+          const orderIdInput = document.getElementById("editCoverOrderId");
+          if (orderIdInput && orderId) {
+            orderIdInput.value = orderId;
+            console.log("Order ID set to:", orderId);
+          }
+        });
+      }
+
+      if (fileInput) {
+        fileInput.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validasi ukuran
+            if (file.size > 5 * 1024 * 1024) {
+              alert("Ukuran file terlalu besar! Maksimal 5MB");
+              fileInput.value = "";
+              previewBlock.style.display = "none";
+              placeholderBlock.style.display = "block";
+              return;
+            }
+
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              previewImg.src = e.target.result;
+              previewBlock.style.display = "block";
+              placeholderBlock.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+          } else {
+            previewBlock.style.display = "none";
+            placeholderBlock.style.display = "block";
+          }
+        });
+      }
+    });
+  </script>
+</div>

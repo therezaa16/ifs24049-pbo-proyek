@@ -1,0 +1,79 @@
+<div th:fragment="editLaundryModal">
+  <form th:action="@{/laundry/edit}" method="post" th:object="${laundryOrderForm}">
+    <div class="modal fade" id="editLaundryModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-warning text-dark">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-pencil-square me-2"></i>Ubah Data Transaksi
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <input id="editLaundryId" type="hidden" th:field="*{id}" />
+
+            <!-- Data Pelanggan -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Nama Pelanggan</label>
+                <input id="editLaundryCustomerName" type="text" class="form-control" th:field="*{customerName}" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Nomor Telepon</label>
+                <input id="editLaundryPhoneNumber" type="tel" class="form-control" th:field="*{phoneNumber}" required />
+              </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <!-- Detail Layanan -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Jenis Layanan</label>
+                <select id="editLaundryServiceType" class="form-select" th:field="*{serviceType}" required>
+                  <option value="Cuci Kering">Cuci Kering (Rp 5.000/kg)</option>
+                  <option value="Cuci Setrika">Cuci Setrika (Rp 7.000/kg)</option>
+                  <option value="Setrika Saja">Setrika Saja (Rp 3.000/kg)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Berat (Kg)</label>
+                <input id="editLaundryWeight" type="number" step="0.1" min="0.1" class="form-control" th:field="*{weight}" required />
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Total Harga</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">Rp</span>
+                  <input id="editLaundryPrice" type="number" class="form-control border-start-0 fw-bold" th:field="*{price}" readonly />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Update Status</label>
+                <select id="editLaundryStatus" class="form-select" th:field="*{status}" required>
+                  <option value="Pending">Pending</option>
+                  <option value="Proses">Proses</option>
+                  <option value="Selesai">Selesai</option>
+                  <option value="Diambil">Diambil</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small text-muted">Catatan</label>
+              <textarea id="editLaundryNotes" class="form-control" rows="2" th:field="*{notes}"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-link text-decoration-none text-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-warning px-4"><i class="bi bi-check-circle me-2"></i>Simpan Perubahan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

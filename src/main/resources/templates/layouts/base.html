@@ -11,72 +11,105 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui"
     />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- Icon -->
+    <!-- Icon & Title -->
     <link rel="icon" th:href="@{/assets/images/logo.png}" type="image/x-icon" />
+    <title layout:title-pattern="$CONTENT_TITLE">Laundry Manager</title>
 
-    <!-- Judul -->
-    <title layout:title-pattern="$CONTENT_TITLE">Spring Boot Todolist</title>
+    <!-- Google Fonts (Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <!-- Styles -->
     <link
       rel="stylesheet"
       th:href="@{/assets/vendor/bootstrap-5.3.8-dist/css/bootstrap.min.css}"
     />
-
     <link
       rel="stylesheet"
       th:href="@{/assets/vendor/sweetalert2/dist/sweetalert2.min.css}"
     />
 
-    <!-- Slot untuk CSS tambahan -->
+    <style>
+      :root {
+        --primary-color: #4e73df;
+        --secondary-color: #858796;
+        --bg-light: #f8f9fc;
+      }
+      
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--bg-light);
+        color: #5a5c69;
+      }
+
+      /* Card Styling */
+      .card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        transition: transform 0.2s;
+      }
+
+      /* Button Styling */
+      .btn {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      /* Navbar/Header if needed later */
+      .navbar-custom {
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,.08);
+      }
+    </style>
+
     <th:block layout:fragment="others-css"></th:block>
   </head>
 
-  <body class="bg-light">
-    <!-- Slot untuk konten -->
-    <div layout:fragment="content" class="container-fluid">
-      <!-- Konten akan diisi oleh child templates -->
+  <body>
+    <div layout:fragment="content" class="container-fluid py-4 px-4">
+      <!-- Content injected here -->
     </div>
 
-    <!-- Bootstrap -->
-    <script
-      th:src="@{/assets/vendor/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"
-    ></script>
-
-    <!-- SweetAlert2 -->
-    <script
-      th:src="@{/assets/vendor/sweetalert2/dist/sweetalert2.all.min.js}"
-    ></script>
+    <!-- Scripts -->
+    <script th:src="@{/assets/vendor/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/vendor/sweetalert2/dist/sweetalert2.all.min.js}"></script>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        /* Ambil pesan sukses dari thymeleaf */
+        /* Success Message */
         const successMessage = "[[${success}]]";
-        if (successMessage && successMessage.length > 5) {
+        if (successMessage && successMessage.length > 2 && successMessage !== 'null') {
           Swal.fire({
             icon: "success",
-            title: "Berhasil Melakukan Tindakan",
+            title: "Berhasil!",
             text: successMessage,
-            showConfirmButton: true,
+            timer: 3000,
+            showConfirmButton: false
           });
         }
 
-        /* Ambil pesan error dari thymeleaf */
+        /* Error Message */
         const errorMessage = "[[${error}]]";
-        if (errorMessage && errorMessage.length > 5) {
+        if (errorMessage && errorMessage.length > 2 && errorMessage !== 'null') {
           Swal.fire({
             icon: "error",
-            title: "Gagal Melakukan Tindakan",
+            title: "Oops...",
             text: errorMessage,
-            showConfirmButton: true,
           });
         }
       });
     </script>
 
-    <!-- Slot untuk JavaScript tambahan -->
     <th:block layout:fragment="others-js"></th:block>
   </body>
 </html>

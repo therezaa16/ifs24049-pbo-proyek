@@ -1,0 +1,79 @@
+<div th:fragment="addLaundryModal">
+  <form th:action="@{/laundry/add}" method="post" th:object="${laundryOrderForm}">
+    <div class="modal fade" id="addLaundryModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-plus-circle me-2"></i>Tambah Transaksi Baru
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Data Pelanggan -->
+            <h6 class="text-primary mb-3"><i class="bi bi-person me-2"></i>Data Pelanggan</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Nama Pelanggan <span class="text-danger">*</span></label>
+                <input id="addLaundryCustomerName" type="text" class="form-control" th:field="*{customerName}" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Nomor Telepon <span class="text-danger">*</span></label>
+                <input id="addLaundryPhoneNumber" type="tel" class="form-control" th:field="*{phoneNumber}" placeholder="08..." required />
+              </div>
+            </div>
+
+            <!-- Detail Layanan -->
+            <h6 class="text-primary mb-3"><i class="bi bi-basket me-2"></i>Detail Layanan</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Jenis Layanan <span class="text-danger">*</span></label>
+                <select id="addLaundryServiceType" class="form-select" th:field="*{serviceType}" required>
+                  <option value="">Pilih Layanan...</option>
+                  <option value="Cuci Kering">Cuci Kering (Rp 5.000/kg)</option>
+                  <option value="Cuci Setrika">Cuci Setrika (Rp 7.000/kg)</option>
+                  <option value="Setrika Saja">Setrika Saja (Rp 3.000/kg)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Berat (Kg) <span class="text-danger">*</span></label>
+                <input id="addLaundryWeight" type="number" step="0.1" min="0.1" class="form-control" th:field="*{weight}" required />
+              </div>
+            </div>
+
+            <!-- Harga & Status -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Total Harga (Otomatis)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">Rp</span>
+                  <input id="addLaundryPrice" type="number" class="form-control border-start-0 fw-bold text-success" th:field="*{price}" readonly />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Status Awal <span class="text-danger">*</span></label>
+                <select id="addLaundryStatus" class="form-select" th:field="*{status}" required>
+                  <option value="Pending">Pending</option>
+                  <option value="Proses">Proses</option>
+                  <option value="Selesai">Selesai</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-3">
+              <label class="form-label small text-muted">Catatan Tambahan</label>
+              <textarea id="addLaundryNotes" class="form-control" rows="2" th:field="*{notes}" placeholder="Contoh: Baju putih jangan dicampur..."></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-link text-decoration-none text-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i>Simpan Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

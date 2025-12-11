@@ -6,169 +6,384 @@
   lang="id"
 >
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spring Boot Todolist</title>
+    <title>Dashboard Laundry</title>
+    <style>
+      .card-stats {
+        overflow: hidden;
+        position: relative;
+      }
+      .card-stats .icon-bg {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 4rem;
+        opacity: 0.2;
+        color: white;
+      }
+      .bg-gradient-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
+      .bg-gradient-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
+      .bg-gradient-info { background: linear-gradient(45deg, #36b9cc, #258391); }
+      .bg-gradient-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   </head>
   <body>
-    <div layout:fragment="content" class="mt-3">
-      <div class="card">
-        <div class="card-header d-flex">
-          <div class="flex-fill">
-            <h3>Hay, [[${auth.name}]]</h3>
-          </div>
-          <div>
-            <div>
-              <a th:href="@{/auth/logout}" class="btn btn-sm btn-danger"
-                >Keluar</a
-              >
+    <div layout:fragment="content">
+      
+      <!-- Welcome Section -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 class="fw-bold text-dark mb-1">Laundry Managment System</h3>
+          <p class="text-muted">Selamat datang kembali, <span class="fw-bold text-primary">[[${auth.name}]]</span>!</p>
+        </div>
+        <a th:href="@{/auth/logout}" class="btn btn-outline-danger btn-sm shadow-sm">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="row mb-4">
+        <!-- Total Order -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card card-stats bg-gradient-info text-white h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs fw-bold text-uppercase mb-1" style="opacity: 0.8">Total Order</div>
+                  <div class="h3 mb-0 fw-bold" th:text="${totalOrders ?: 0}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="bi bi-basket3 icon-bg"></i>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="card-body">
-          <div class="d-flex mb-2">
-            <div class="flex-fill">
-              <h3>Daftar Todo List</h3>
-            </div>
-            <div>
-              <button
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#addTodoModal"
-              >
-                Tambah Todo
-              </button>
+
+        <!-- Pending -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card card-stats bg-gradient-warning text-white h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs fw-bold text-uppercase mb-1" style="opacity: 0.8">Perlu Dikerjakan</div>
+                  <div class="h3 mb-0 fw-bold" th:text="${pendingOrders ?: 0}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="bi bi-clock-history icon-bg"></i>
+                </div>
+              </div>
             </div>
           </div>
-          <table class="table table-striped">
-            <tr class="table-light">
-              <th>No</th>
-              <th>Judul</th>
-              <th>Dibuat pada</th>
-              <th>Diubah pada</th>
-              <th>Status</th>
-              <th>Tindakan</th>
-            </tr>
+        </div>
 
-            <tr th:each="todo, status : ${todos}">
-              <td th:text="${status.index + 1}"></td>
-              <td th:text="${todo.title}"></td>
-              <td
-                th:text="${#temporals.format(todo.createdAt, 'd MMMM yyyy, HH:mm')}"
-              ></td>
-              <td
-                th:text="${#temporals.format(todo.updatedAt, 'd MMMM yyyy, HH:mm')}"
-              ></td>
-              <td>
-                <span th:if="${todo.finished}" class="badge bg-success"
-                  >Selesai</span
-                >
-                <span th:unless="${todo.finished}" class="badge bg-danger"
-                  >Belum selesai</span
-                >
-              </td>
-              <td>
-                <a
-                  th:href="@{/todos/{todoId}(todoId=${todo.id})}"
-                  class="btn btn-sm btn-info"
-                >
-                  Detail
-                </a>
-                <button
-                  th:id="|editTodoButton_${todo.id}|"
-                  th:attr="onclick=|prepareEditTodo(`${todo.id}`, `${todo.title}`, `${todo.description}`, ${todo.finished})|"
-                  class="btn btn-sm btn-warning"
-                >
-                  Edit
-                </button>
-                <button
-                  th:id="|deleteTodoButton_${todo.id}|"
-                  th:attr="onclick=|prepareDeleteTodo(`${todo.id}`, `${todo.title}`)|"
-                  class="btn btn-sm btn-danger"
-                >
-                  Hapus
-                </button>
-              </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(todos)}">
-              <td colspan="6" class="text-center">
-                Belum ada data todo yang tersedia.
-              </td>
-            </tr>
-          </table>
+        <!-- Proses -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card card-stats bg-gradient-primary text-white h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs fw-bold text-uppercase mb-1" style="opacity: 0.8">Sedang Proses</div>
+                  <div class="h3 mb-0 fw-bold" th:text="${ongoingOrders ?: 0}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="bi bi-gear-wide-connected icon-bg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card card-stats bg-gradient-success text-white h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs fw-bold text-uppercase mb-1" style="opacity: 0.8">Pendapatan</div>
+                  <div class="h4 mb-0 fw-bold">Rp <span th:text="${#numbers.formatDecimal(totalRevenue ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                </div>
+                <div class="col-auto">
+                  <i class="bi bi-cash-coin icon-bg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Modals -->
-      <div th:replace="~{models/todos/add :: addTodoModal}"></div>
-      <div th:replace="~{models/todos/edit :: editTodoModal}"></div>
-      <div th:replace="~{models/todos/delete :: deleteTodoModal}"></div>
+      <!-- Charts Section -->
+      <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+              <h6 class="m-0 fw-bold text-primary"><i class="bi bi-bar-chart-fill me-2"></i>Statistik Layanan</h6>
+            </div>
+            <div class="card-body">
+              <div class="chart-area" style="height: 300px;">
+                <canvas id="serviceChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+              <h6 class="m-0 fw-bold text-primary"><i class="bi bi-pie-chart-fill me-2"></i>Status Pesanan</h6>
+            </div>
+            <div class="card-body">
+              <div class="chart-pie pt-4 pb-2" style="height: 300px; position: relative;">
+                <canvas id="statusChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Data Table -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+          <h6 class="m-0 fw-bold text-primary">Daftar Transaksi Laundry</h6>
+          <button class="btn btn-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#addLaundryModal">
+            <i class="bi bi-plus-lg me-1"></i> Transaksi Baru
+          </button>
+        </div>
+        <div class="card-body">
+          
+          <!-- Search -->
+          <form th:action="@{/laundry}" method="get" class="mb-4">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" name="search" class="form-control border-start-0 ps-0" 
+                     placeholder="Cari nama pelanggan atau nomor HP..." th:value="${search}">
+              <button class="btn btn-primary" type="submit">Cari</button>
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>No</th>
+                  <th>Pelanggan</th>
+                  <th>Layanan</th>
+                  <th>Berat</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th class="text-end">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="order, status : ${laundryOrders}">
+                  <td th:text="${status.index + 1}" class="text-muted"></td>
+                  <td>
+                    <div class="fw-bold text-dark" th:text="${order.customerName}"></div>
+                    <small class="text-muted" th:text="${order.phoneNumber}"></small>
+                  </td>
+                  <td><span class="badge bg-light text-dark border" th:text="${order.serviceType}"></span></td>
+                  <td><span th:text="${order.weight}"></span> kg</td>
+                  <td class="fw-bold text-success">Rp <span th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')}"></span></td>
+                  <td>
+                    <span th:if="${order.status == 'Pending'}" class="badge bg-warning text-dark"><i class="bi bi-hourglass me-1"></i>Pending</span>
+                    <span th:if="${order.status == 'Proses'}" class="badge bg-primary"><i class="bi bi-gear-fill me-1"></i>Proses</span>
+                    <span th:if="${order.status == 'Selesai'}" class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Selesai</span>
+                    <span th:if="${order.status == 'Diambil'}" class="badge bg-info"><i class="bi bi-bag-check-fill me-1"></i>Diambil</span>
+                  </td>
+                  <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}"></td>
+                  <td class="text-end">
+                    <div class="btn-group">
+                      <a th:href="@{/laundry/{orderId}(orderId=${order.id})}" class="btn btn-sm btn-outline-info" title="Detail"><i class="bi bi-eye"></i></a>
+                      
+                      <button class="btn btn-sm btn-outline-warning"
+                        th:attr="onclick=|prepareEditLaundry('${order.id}', '${order.customerName}', '${order.phoneNumber}', '${order.serviceType}', ${order.weight}, ${order.price}, '${order.status}', '${order.notes}')|"
+                        title="Edit"><i class="bi bi-pencil"></i></button>
+                      
+                      <button class="btn btn-sm btn-outline-danger"
+                        th:attr="onclick=|prepareDeleteLaundry('${order.id}', '${order.customerName}')|"
+                        title="Hapus"><i class="bi bi-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(laundryOrders)}">
+                  <td colspan="8" class="text-center py-5">
+                    <div class="text-muted">
+                      <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                      Belum ada data transaksi.
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Include Modals -->
+      <div th:replace="~{models/laundry/add :: addLaundryModal}"></div>
+      <div th:replace="~{models/laundry/edit :: editLaundryModal}"></div>
+      <div th:replace="~{models/laundry/delete :: deleteLaundryModal}"></div>
+
     </div>
 
-    <!-- Scripts -->
-    <script layout:fragment="others-js">
-      function prepareEditTodo(id, title, description, finished) {
-        /* Set nilai pada form edit */
-        document.getElementById("editTodoId").value = id;
-        document.getElementById("editTodoTitle").value = title;
-        document.getElementById("editTodoDescription").value = description;
-        document.getElementById("editTodoFinished").value = finished
-          ? "1"
-          : "0";
+    <!-- Scripts for Charts & Modals -->
+    <script layout:fragment="others-js" th:inline="javascript">
+      /*<![CDATA[*/
+      // ✅ FIX: Ambil data dari backend dengan benar
+      const statusChartData = /*[[${statusChart}]]*/ {};
+      const serviceChartData = /*[[${serviceChart}]]*/ {};
 
-        /* Tampilkan modal */
-        var editModal = new bootstrap.Modal(
-          document.getElementById("editTodoModal")
-        );
-        editModal.show();
+      // Prepare data untuk Status Chart (Pie)
+      const statusLabels = Object.keys(statusChartData);
+      const statusValues = Object.values(statusChartData);
+
+      // Prepare data untuk Service Chart (Bar)
+      const serviceLabels = Object.keys(serviceChartData);
+      const serviceValues = Object.values(serviceChartData);
+
+      // ✅ Pie Chart (Status)
+      if (document.getElementById('statusChart')) {
+        new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: {
+            labels: statusLabels.length > 0 ? statusLabels : ['Belum ada data'],
+            datasets: [{
+              data: statusValues.length > 0 ? statusValues : [1],
+              backgroundColor: ['#f6c23e', '#4e73df', '#1cc88a', '#36b9cc'],
+              borderWidth: 2,
+              borderColor: '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 15,
+                  font: {
+                    size: 12
+                  }
+                }
+              }
+            }
+          }
+        });
       }
 
-      function prepareDeleteTodo(id, title) {
-        /* Set nilai pada form delete */
-        document.getElementById("deleteTodoId").value = id;
-        document.getElementById("deleteTodoTitle").innerText = title;
-
-        /* Tampilkan modal */
-        var deleteModal = new bootstrap.Modal(
-          document.getElementById("deleteTodoModal")
-        );
-        deleteModal.show();
+      // ✅ Bar Chart (Services)
+      if (document.getElementById('serviceChart')) {
+        new Chart(document.getElementById('serviceChart'), {
+          type: 'bar',
+          data: {
+            labels: serviceLabels.length > 0 ? serviceLabels : ['Belum ada data'],
+            datasets: [{
+              label: 'Jumlah Transaksi',
+              data: serviceValues.length > 0 ? serviceValues : [0],
+              backgroundColor: '#4e73df',
+              borderRadius: 8,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1
+                },
+                grid: {
+                  borderDash: [2, 2]
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
-        /* Cek apakah modal add perlu dibuka otomatis */
-        var addTodoModalOpen = "[[${addTodoModalOpen}]]" === "true";
-        if (addTodoModalOpen) {
-          var addModal = new bootstrap.Modal(
-            document.getElementById("addTodoModal")
-          );
-          addModal.show();
-        }
+      // --- MODAL LOGIC ---
+      function prepareEditLaundry(id, name, phone, service, weight, price, status, notes) {
+        document.getElementById("editLaundryId").value = id;
+        document.getElementById("editLaundryCustomerName").value = name;
+        document.getElementById("editLaundryPhoneNumber").value = phone;
+        document.getElementById("editLaundryServiceType").value = service;
+        document.getElementById("editLaundryWeight").value = weight;
+        document.getElementById("editLaundryPrice").value = price;
+        document.getElementById("editLaundryStatus").value = status;
+        document.getElementById("editLaundryNotes").value = notes || '';
+        new bootstrap.Modal(document.getElementById("editLaundryModal")).show();
+      }
 
-        /* Cek apakah modal edit perlu dibuka otomatis */
-        var editTodoModalOpen = "[[${editTodoModalOpen}]]" === "true";
-        if (editTodoModalOpen) {
-          const editTodoModalId = "[[${editTodoModalId}]]";
-          const buttonEdit = document.getElementById(
-            `editTodoButton_${editTodoModalId}`
-          );
-          if (buttonEdit) {
-            buttonEdit.click();
-          }
-        }
+      function prepareDeleteLaundry(id, name) {
+        document.getElementById("deleteLaundryId").value = id;
+        document.getElementById("deleteLaundryCustomerName").innerText = name;
+        document.getElementById("deleteLaundryConfirmName").value = '';
+        new bootstrap.Modal(document.getElementById("deleteLaundryModal")).show();
+      }
+      
+      // Auto Calculation
+      function calculatePrice(typeId, weightId, priceId) {
+        const type = document.getElementById(typeId).value;
+        const weight = parseFloat(document.getElementById(weightId).value || 0);
+        let pricePerKg = 0;
+        if(type === "Cuci Kering") pricePerKg = 5000;
+        else if(type === "Cuci Setrika") pricePerKg = 7000;
+        else if(type === "Setrika Saja") pricePerKg = 3000;
+        document.getElementById(priceId).value = pricePerKg * weight;
+      }
+      
+      // Bind event listeners for auto calc - Add Modal
+      const addServiceType = document.getElementById("addLaundryServiceType");
+      const addWeight = document.getElementById("addLaundryWeight");
+      if (addServiceType) {
+        addServiceType.addEventListener("change", () => calculatePrice("addLaundryServiceType", "addLaundryWeight", "addLaundryPrice"));
+      }
+      if (addWeight) {
+        addWeight.addEventListener("input", () => calculatePrice("addLaundryServiceType", "addLaundryWeight", "addLaundryPrice"));
+      }
+      
+      // Bind event listeners for auto calc - Edit Modal
+      const editServiceType = document.getElementById("editLaundryServiceType");
+      const editWeight = document.getElementById("editLaundryWeight");
+      if (editServiceType) {
+        editServiceType.addEventListener("change", () => calculatePrice("editLaundryServiceType", "editLaundryWeight", "editLaundryPrice"));
+      }
+      if (editWeight) {
+        editWeight.addEventListener("input", () => calculatePrice("editLaundryServiceType", "editLaundryWeight", "editLaundryPrice"));
+      }
 
-        /* Cek apakah modal delete perlu dibuka otomatis */
-        var deleteTodoModalOpen = "[[${deleteTodoModalOpen}]]" === "true";
-        if (deleteTodoModalOpen) {
-          const deleteTodoModalId = "[[${deleteTodoModalId}]]";
-          const buttonDelete = document.getElementById(
-            `deleteTodoButton_${deleteTodoModalId}`
-          );
-          if (buttonDelete) {
-            buttonDelete.click();
-          }
-        }
-      });
+      // ✅ Check jika ada modal yang perlu dibuka kembali setelah error
+      const addModalOpen = "[[${addLaundryModalOpen}]]" === "true";
+      const editModalOpen = "[[${editLaundryModalOpen}]]" === "true";
+      const editModalId = "[[${editLaundryModalId}]]";
+      const deleteModalOpen = "[[${deleteLaundryModalOpen}]]" === "true";
+      const deleteModalId = "[[${deleteLaundryModalId}]]";
+
+      if (addModalOpen) {
+        new bootstrap.Modal(document.getElementById("addLaundryModal")).show();
+      }
+      if (editModalOpen && editModalId) {
+        // Bisa load data order untuk edit jika perlu
+        new bootstrap.Modal(document.getElementById("editLaundryModal")).show();
+      }
+      if (deleteModalOpen && deleteModalId) {
+        new bootstrap.Modal(document.getElementById("deleteLaundryModal")).show();
+      }
+      /*]]>*/
     </script>
   </body>
 </html>
