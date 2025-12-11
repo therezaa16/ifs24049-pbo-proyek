@@ -1,6 +1,7 @@
 package org.delcom.app.views;
 
 import java.util.Map;
+
 import org.delcom.app.dto.LaundryOrderForm;
 import org.delcom.app.entities.User;
 import org.delcom.app.services.LaundryOrderService;
@@ -11,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeView {
@@ -23,7 +23,7 @@ public class HomeView {
     }
 
     @GetMapping
-    public String home(@RequestParam(required = false) String search, Model model) {
+    public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
         // Check if authentication is null or anonymous
@@ -39,9 +39,8 @@ public class HomeView {
         User authUser = (User) principal;
         model.addAttribute("auth", authUser);
 
-        // Laundry Orders with search support
-        String searchQuery = (search != null && !search.trim().isEmpty()) ? search.trim() : "";
-        var laundryOrders = laundryOrderService.getAllLaundryOrders(authUser.getId(), searchQuery);
+        // Laundry Orders
+        var laundryOrders = laundryOrderService.getAllLaundryOrders(authUser.getId(), "");
         model.addAttribute("laundryOrders", laundryOrders);
 
         // ✅ FIX: Ambil statistics dari service
@@ -57,7 +56,7 @@ public class HomeView {
         model.addAttribute("pendingOrders", stats.get("pendingOrders"));
         model.addAttribute("statusChart", stats.get("statusChart"));
         model.addAttribute("serviceChart", stats.get("serviceChart"));
-        model.addAttribute("search", searchQuery);
+        model.addAttribute("search", "");
 
         return ConstUtil.TEMPLATE_PAGES_HOME;
     }
